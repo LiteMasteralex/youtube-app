@@ -1,0 +1,30 @@
+body {
+  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+  text-align: center;
+}
+.newsImage{
+  width: 25%;
+  height: 25%;
+}
+.newsAuthor {
+  font-size: 14px;
+  color: dimgray;
+  text-decoration: underline;
+  text-decoration-color: dimgray;
+  margin-bottom: 1%;
+}
+.newsDescription {
+  padding-right: 25%;
+}
+.result {
+  margin: 1%;
+}
+.videoContainer {
+  padding: 0.25% 1% 1% 1%;
+  background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 5px;
+  margin-bottom: 1%;
+}
+.inputField {
+  margin: 1%;
+}
