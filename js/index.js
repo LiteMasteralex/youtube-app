@@ -1,10 +1,16 @@
-//
+//GlobaL variable for future calls
+let nextPage;
+let keyWord;
+let url = "https://www.googleapis.com/youtube/v3/search";
+let apiKey = "AIzaSyAz4txV5bfaSkaR5Mh947J6O22AfiGPjZ4";
+
+// Listener for the search query
 $("#videoQuery").on("submit", function(event) { 
   event.preventDefault();
-
-  let url = "https://www.googleapis.com/youtube/v3/search";
-  let keyWord = $("#keyWord").val();
-  let apiKey = "AIzaSyAz4txV5bfaSkaR5Mh947J6O22AfiGPjZ4";
+  $(".result").empty();
+  $(".moreButton").remove();
+   keyWord= $("#keyWord").val();
+   $("#keyWord").val("");
 
   $.ajax({
     url: url,
@@ -12,55 +18,62 @@ $("#videoQuery").on("submit", function(event) {
       part: "snippet",
       q: keyWord,
       key: apiKey,
-      maxResults: 10
+      maxResults: 10,
+      type: "video"
     },
     method: "GET",
     dataType: "json",
     success: function(response) {
-      console.log(response);
-      // response.articles.forEach(function(article) {
-
-      //   let title = `<h3>${article.title}</h3>`;
-      //   let image = `<image class="newsImage" src="${article.urlToImage}" />`;
-      //   let author = `<div class="newsAuthor">${article.author}</div>`;
-      //   let description = `<div class="newsDescription">${article.description}</div>`;
-      //   let newHTML = `<div class="newsContainer">` + title + image + author + description + `</div>`;
-      //   $(".result").append(newHTML);
-      // })
+      nextPage = response.nextPageToken;
+      response.items.forEach(function(video) {
+        let imageUrl = video.snippet.thumbnails.medium.url;
+        let videoUrl = 'https://www.youtube.com/watch?v=' + video.id.videoId;
+        let image = `<image class="thumbnail" src="${imageUrl}" />`;
+        let title = `<div class="title">${video.snippet.title}</div>`;
+        let description = `<div class="videoDescription">${video.snippet.description}</div>`;
+        let container = `<span class="thumbContainer">${image}</span>` + `<span class="infoContainer">${title}${description}</span>`
+        let newHTML = `<div onclick="window.open('${videoUrl}', 'mywindow');" class="videoContainer">${container}</div>`;
+        $(".result").append(newHTML);
+      });
+      $("body").append(`<button class="moreButton">More</button>`)
     },
     error: function(error) {
       console.log(error)
     }
-  })
+  });
+ 
 
 });
 
-//Second Request
-/*
-$.ajax({
-  url: url,
-  data: {
-    part: "snippet",
-    key: apiKey,
-    maxResults: 10,
-    pageToken: result
-  },
-  method: "GET",
-  dataType: "json",
-  success: function(response) {
-    console.log(response);
-    // response.articles.forEach(function(article) {
-
-    //   let title = `<h3>${article.title}</h3>`;
-    //   let image = `<image class="newsImage" src="${article.urlToImage}" />`;
-    //   let author = `<div class="newsAuthor">${article.author}</div>`;
-    //   let description = `<div class="newsDescription">${article.description}</div>`;
-    //   let newHTML = `<div class="newsContainer">` + title + image + author + description + `</div>`;
-    //   $(".result").append(newHTML);
-    // })
-  },
-  error: function(error) {
-    console.log(error)
-  }
+//Get more videos request
+$("body").on("click", "button.moreButton", function() {
+  $.ajax({
+    url: url,
+    data: {
+      part: "snippet",
+      q: keyWord,
+      key: apiKey,
+      maxResults: 10,
+      type: "video",
+      pageToken: nextPage
+    },
+    method: "GET",
+    dataType: "json",
+    success: function(response) {
+      nextPage = response.nextPageToken;
+      response.items.forEach(function(video) {
+        let imageUrl = video.snippet.thumbnails.medium.url;
+        let videoUrl = 'https://www.youtube.com/watch?v=' + video.id.videoId;
+        let image = `<image class="thumbnail" src="${imageUrl}" />`;
+        let title = `<div class="title">${video.snippet.title}</div>`;
+        let description = `<div class="videoDescription">${video.snippet.description}</div>`;
+        let container = `<span class="thumbContainer">${image}</span>` + `<span class="infoContainer">${title}${description}</span>`
+        let newHTML = `<div onclick="window.open('${videoUrl}', 'mywindow');" class="videoContainer">${container}</div>`;
+        $(".result").append(newHTML);
+      });
+    },
+    error: function(error) {
+      console.log(error)
+    }
+  });
 });
-*/
